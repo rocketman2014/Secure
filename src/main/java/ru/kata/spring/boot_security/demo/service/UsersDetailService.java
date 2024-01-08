@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.User;
@@ -16,20 +17,14 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class UsersDetailService implements UserDetailsService {
     private final UserRepository userRepository;
-
+    private final PasswordEncoder passwordEncoder;
     @Autowired
-    public UsersDetailService(UserRepository userRepository) {
+    public UsersDetailService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByUsername(username);
 
-        if (user.isEmpty())
-            throw new UsernameNotFoundException("User not found");
-        return new User(user.get());
-    }
 
     public User findByUserId(Long id) {
         Optional<User> userDb = userRepository.findById(id);
@@ -49,7 +44,17 @@ public class UsersDetailService implements UserDetailsService {
     @Transactional
     public void updateUser (Long id, User upUser) {
         upUser.setId(id);
+        upUser.setPassword(passwordEncoder.encode(upUser.getPassword()));
         userRepository.save(upUser);
+    }
 
+    @Override
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findByUsername(username);
+
+        if (user.isEmpty())
+            throw new UsernameNotFoundException("User not found");
+
+        return new User(user.get());
     }
 }

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update user</title>
+</head>
+<body>
+
+<form th:method="POST" th:action="@{create}" th:object="${user}">
+    <label for="name">Enter name: </label>
+    <input type="text" th:field="*{username}" id="name"/>
+    <br/>
+    <label for="email">Enter email: </label>
+    <input type="text" th:field="*{email}" id="email"/>
+    <br/>
+    <label for="age">Enter age: </label>
+    <input type="text" th:field="*{age}" id="age"/>
+    <br/>
+    <label for="password">Enter password: </label>
+    <input type="password" th:field="*{password}" id="password"/>
+    <br/>
+    <label>Select Role</label>
+    <select th:field="*{role}">
+        <option value="">-- Select Role --</option>
+        <option th:value="2">Admin</option>
+        <option th:value="1">User</option>
+    </select>
+    <br/>
+    <input type="submit" value="Add new User!"/>
+</form>
+
+</body>
+</html>

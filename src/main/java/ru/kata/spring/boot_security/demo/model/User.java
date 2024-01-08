@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.model;
 
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -32,19 +33,12 @@ public class User implements UserDetails {
     private Set<Role> roles;
 
     public User() {
-
     }
 
-    public User(long id, String username, byte age, String email, String password) {
-        this.id = id;
-        this.username = username;
-        this.age = age;
-        this.email = email;
-        this.password = password;
-    }
+
 
     public User(User user) {
-
+        BeanUtils.copyProperties(user, this);
     }
 
     public Set<Role> getRoles() {
