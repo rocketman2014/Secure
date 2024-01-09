@@ -6,25 +6,30 @@
 </head>
 <body>
 
-<form th:method="POST" th:action="@{update}" th:object="${user}">
-    <label for="name">Enter name: </label>
-    <input type="text" th:field="*{username}" id="name"/>
+<form th:method="POST" th:action="@{/admin/edit}" th:object="${user}">
+    <label for="username">Enter name: </label>
+    <input type="text" th:field="*{username}" id="username"/>
+    <div STYLE="color: red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username Error</div>
     <br/>
     <label for="email">Enter email: </label>
     <input type="text" th:field="*{email}" id="email"/>
+    <div STYLE="color: red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</div>
     <br/>
     <label for="age">Enter age: </label>
     <input type="text" th:field="*{age}" id="age"/>
+    <div STYLE="color: red" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">Age Error</div>
     <br/>
     <label for="password">Enter password: </label>
     <input type="password" th:field="*{password}" id="password"/>
+    <div STYLE="color: red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</div>
     <br/>
     <label>Select Role</label>
-    <select th:field="*{role}">
+    <select th:field="*{roles}">
         <option value="">-- Select Role --</option>
         <option th:value="2">Admin</option>
         <option th:value="1">User</option>
     </select>
+    <div STYLE="color: red" class="error" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}">Role error</div>
     <br/>
     <input type="hidden" th:field="*{id}"/>
     <input type="submit" value="Update!"/>

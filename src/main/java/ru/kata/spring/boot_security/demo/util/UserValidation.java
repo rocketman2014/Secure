@@ -11,6 +11,7 @@ import ru.kata.spring.boot_security.demo.service.UsersDetailService;
 @Component
 public class UserValidation implements Validator {
     private final UsersDetailService userDevServ;
+
     @Autowired
     public UserValidation(UsersDetailService userDevServ) {
         this.userDevServ = userDevServ;
@@ -23,14 +24,17 @@ public class UserValidation implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-            User user = (User) target;
+        User user = (User) target;
+        User userExist;
         try {
-            userDevServ.loadUserByUsername(user.getUsername());
-        }catch (UsernameNotFoundException ignored) {
+            userExist = userDevServ.loadUserByUsername(user.getUsername());
+        } catch (UsernameNotFoundException ignored) {
             return;
         }
+        if (user.getId() != null && userExist.getId().equals(user.getId()))
+            return;
         errors.rejectValue("username", "",
                 "Человек с таким именем пользователя уже существует");
     }
-    }
+}
 
