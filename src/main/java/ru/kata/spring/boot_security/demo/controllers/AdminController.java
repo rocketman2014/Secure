@@ -1,13 +1,17 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.service.UsersDetailService;
+import ru.kata.spring.boot_security.demo.service.UserService;
 import ru.kata.spring.boot_security.demo.util.UserValidation;
 
 import javax.validation.Valid;
@@ -15,62 +19,55 @@ import javax.validation.Valid;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private final UsersDetailService userService;
+    private final UserService userService;
     private final UserValidation validation;
 
     @Autowired
-    public AdminController(UsersDetailService userService, UserValidation validation) {
+    public AdminController(UserService userService, UserValidation validation) {
         this.userService = userService;
         this.validation = validation;
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public String userList(Model model) {
-        model.addAttribute("allUsers", userService.allUser());
+        model.addAttribute("allUsers", userService.getAll());
         return "admin";
     }
 
+    @Transactional
     @PostMapping("/delete")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String deleteUser(@RequestParam("id") long id) {
-        userService.deleteUser(id);
+    public String delete(@RequestParam("id") int id, Model model) {
+        model.addAttribute("user", userService.findById(id));
+        userService.delete(id);
         return "redirect:/admin";
     }
 
-    @PostMapping("/edit{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/edit")
     public String update(@Valid @ModelAttribute("user") User user,
-                         BindingResult bindingResult,
-                         @RequestParam("id") long id) {
+                         BindingResult bindingResult, @RequestParam("id") int id) {
         validation.validate(user, bindingResult);
         if (bindingResult.hasErrors())
             return "/edit";
-        userService.updateUser(id, user);
+        userService.update(id, user);
         return "redirect:/admin";
     }
 
     @GetMapping("/edit")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String edit(Model model, @RequestParam("id") long id) {
-        model.addAttribute("user", userService.findByUserId(id));
+    public String edit(Model model, @RequestParam("id") int id) {
+        model.addAttribute("user", userService.findById(id));
         return "edit";
     }
 
     @GetMapping("/adduser")
-    @PreAuthorize("hasRole('ADMIN')")
     public String newUser(@ModelAttribute("user") User user) {
         return "adduser";
     }
 
-    @PostMapping("/adduser")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String create(@Valid @ModelAttribute("user") User user,
-                         BindingResult bindingResult) {
+    @PostMapping()
+    public String addUser(@ModelAttribute("user") User user, @Valid BindingResult bindingResult) {
         validation.validate(user, bindingResult);
-        if (bindingResult.hasErrors())
-            return "/adduser";
-        userService.saveUser(user);
+        if (bindingResult.hasErrors()) return "adduser";
+        userService.save(user);
         return "redirect:/admin";
     }
 }

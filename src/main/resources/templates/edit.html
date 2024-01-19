@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<form th:method="POST" th:action="@{/admin/edit}" th:object="${user}">
+<form th:method="POST" th:action="@{/admin}" th:object="${user}">
     <label for="username">Enter name: </label>
     <input type="text" th:field="*{username}" id="username"/>
     <div STYLE="color: red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username Error</div>
@@ -24,11 +24,13 @@
     <div STYLE="color: red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</div>
     <br/>
     <label>Select Role</label>
-    <select th:field="*{roles}">
-        <option value="">-- Select Role --</option>
-        <option th:value="2">Admin</option>
-        <option th:value="1">User</option>
-    </select>
+    <label>
+        <select th:field="*{roles}">
+            <option value="">-- Select Role --</option>
+            <option th:value="ROLE_USER">User</option>
+            <option th:value="ROLE_ADMIN">Admin</option>
+        </select>
+    </label>
     <div STYLE="color: red" class="error" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}">Role error</div>
     <br/>
     <input type="hidden" th:field="*{id}"/>

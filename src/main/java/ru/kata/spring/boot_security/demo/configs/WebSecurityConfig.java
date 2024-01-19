@@ -10,17 +10,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import ru.kata.spring.boot_security.demo.service.UsersDetailService;
+import ru.kata.spring.boot_security.demo.service.UserService;
+
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final SuccessUserHandler successUserHandler;
-    private final UsersDetailService usersDetailService;
+    private final UserService usersDetailService;
 
     @Autowired
-    public WebSecurityConfig(SuccessUserHandler successUserHandler, @Lazy UsersDetailService usersDetailService) {
+    public WebSecurityConfig(SuccessUserHandler successUserHandler, @Lazy UserService usersDetailService) {
         this.successUserHandler = successUserHandler;
         this.usersDetailService = usersDetailService;
     }
@@ -30,7 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/registration", "/error", "/error/**").not().fullyAuthenticated()
-                .antMatchers("/admin").hasRole("ADMIN")
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/", "/index").permitAll()
                 .anyRequest().authenticated()
@@ -40,11 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
                 .logout().logoutUrl("/logout")
-                .permitAll()
-                .and()
-                .exceptionHandling().accessDeniedHandler(((request,
-                                                           response,
-                                                           accessDeniedException) -> response.sendRedirect("/403")));
+                .permitAll();
     }
 
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

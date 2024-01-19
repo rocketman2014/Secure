@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
     <title>Registration</title>
 </head>
 <body>
@@ -25,10 +25,13 @@
     <br/>
     <label>Select Role</label>
     <label>
-        <select th:field="*{role}">
-            <option th:value="1">User</option>
+        <select th:field="*{roles}">
+            <option value="">-- Select Role --</option>
+            <option th:value="ROLE_USER">User</option>
+            <option th:value="ROLE_ADMIN">Admin</option>
         </select>
     </label>
+    <!--    <div STYLE="color: red" class="error" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}">Role error</div>-->
     <br/>
     <input type="submit" value="Sign up!">
 </form>
